@@ -34,13 +34,13 @@ class LoginScreen extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                CustomTextField(controller: _username, label: "username"),
+                CustomTextField(controller: _username, label: "Email"),
                 const SizedBox(
                   height: 10,
                 ),
                 CustomTextField(
                     controller: _password,
-                    label: "password",
+                    label: "Password",
                     obscureText: true),
                 const SizedBox(height: 20),
                 SizedBox(

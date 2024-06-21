@@ -34,7 +34,7 @@ class SignUpScreen extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                CustomTextField(controller: _username, label: "Username"),
+                CustomTextField(controller: _username, label: "Email"),
                 const SizedBox(
                   height: 10,
                 ),
