@@ -1,16 +1,26 @@
+import 'package:chat_app/auth/auth_servie.dart';
 import 'package:chat_app/widgets/textfied.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key, required this.onTap});
 
-
   final void Function() onTap;
-  final _username = TextEditingController();
+  final _email = TextEditingController();
   final _password = TextEditingController();
 
-  void _handleLogin() {
-    print("Logged in");
+  void _handleLogin(BuildContext context) async {
+    final authService = AuthService();
+    try {
+      await authService.signInWithEmailPassword(_email.text, _password.text);
+    } catch (e) {
+      print("Error");
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text(e.toString()),
+              ));
+    }
   }
 
   @override
@@ -34,7 +44,7 @@ class LoginScreen extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                CustomTextField(controller: _username, label: "Email"),
+                CustomTextField(controller: _email, label: "Email"),
                 const SizedBox(
                   height: 10,
                 ),
@@ -54,7 +64,7 @@ class LoginScreen extends StatelessWidget {
                             BorderRadius.circular(8), // Adjust as desired
                       ),
                     ),
-                    onPressed: () => _handleLogin(),
+                    onPressed: () => _handleLogin(context),
                     child: const Text(
                       'Login',
                       style: TextStyle(
