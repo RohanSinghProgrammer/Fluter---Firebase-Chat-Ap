@@ -12,7 +12,7 @@ class SettingsScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: const Center(
-        child: Text('Settings Screen'),
+        child: Text('Settings Screen Will Be Ready Soon :)'),
       ),
     );
   }

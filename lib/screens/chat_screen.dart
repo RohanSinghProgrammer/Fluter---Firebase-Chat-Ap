@@ -15,6 +15,7 @@ class ChatScreen extends StatelessWidget {
 
   // get services
   final ChatService _chatService = ChatService();
+  final AuthService _authService = AuthService();
 
   // send message
   void _sendMessage(context) async {
@@ -58,9 +59,19 @@ class ChatScreen extends StatelessWidget {
                     hintText: 'Type a message',
                   ),
                 )),
-                IconButton(
-                    onPressed: () => _sendMessage(context),
-                    icon: const Icon(Icons.arrow_upward))
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.blue,
+                  ),
+                  child: IconButton(
+                      onPressed: () => _sendMessage(context),
+                      icon: const Icon(
+                        Icons.arrow_upward,
+                        color: Colors.white,
+                      )),
+                )
               ],
             ),
           )
@@ -97,7 +108,28 @@ class ChatScreen extends StatelessWidget {
   // message Item
   Widget _buildMessageItem(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    // Check current User
+    bool currentUser = data["senderID"] == _authService.getUser()!.uid;
 
-    return Text(data['message']);
+    return Row(
+      mainAxisAlignment:
+          currentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+          decoration: BoxDecoration(
+            color: currentUser ? Colors.blue : Colors.grey[200],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            data['message'],
+            style: TextStyle(
+                color: currentUser ? Colors.white : Colors.black,
+                fontWeight: FontWeight.w500),
+          ),
+        ),
+      ],
+    );
   }
 }
