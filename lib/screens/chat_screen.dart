@@ -3,13 +3,18 @@ import 'package:chat_app/services/chat/chat_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class ChatScreen extends StatelessWidget {
-  ChatScreen(
+class ChatScreen extends StatefulWidget {
+  const ChatScreen(
       {super.key, required this.receiverEmail, required this.receiverID});
 
   final String receiverEmail;
   final String receiverID;
 
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
   // text controller
   final TextEditingController _message = TextEditingController();
 
@@ -17,16 +22,52 @@ class ChatScreen extends StatelessWidget {
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
 
+  // msg input focus
+  final FocusNode _focusNode = FocusNode();
+
+  // focus o input node
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(
+      () {
+        Future.delayed(const Duration(milliseconds: 500), () => _scrollDown());
+      },
+    );
+
+    // scroll to bottom when come from different screen
+    Future.delayed(const Duration(milliseconds: 500), () => _scrollDown());
+  }
+
+  // dispose all nodes
+  @override
+  void dispose() {
+    super.dispose();
+    _message.dispose();
+    _focusNode.dispose();
+  }
+
+  // scroll controller
+  final ScrollController _scrollController = ScrollController();
+  void _scrollDown() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+  }
+
   // send message
   void _sendMessage(context) async {
     try {
       if (_message.text.isNotEmpty) {
         await _chatService.sendMessage(
-          receiverID,
+          widget.receiverID,
           _message.text,
         );
         // clear message
         _message.clear();
+        _scrollDown();
       }
     } catch (e) {
       showDialog(
@@ -42,7 +83,7 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(receiverEmail),
+        title: Text(widget.receiverEmail),
       ),
       body: Column(
         children: [
@@ -53,6 +94,7 @@ class ChatScreen extends StatelessWidget {
               children: [
                 Expanded(
                     child: TextField(
+                  focusNode: _focusNode,
                   controller: _message,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -83,7 +125,7 @@ class ChatScreen extends StatelessWidget {
 // Message List
   Widget _buildMessageList() {
     return StreamBuilder(
-        stream: _chatService.getMessages(receiverID),
+        stream: _chatService.getMessages(widget.receiverID),
         builder: (context, snapshot) {
           // Error state
           if (snapshot.hasError) {
@@ -99,6 +141,7 @@ class ChatScreen extends StatelessWidget {
           }
           // return message list
           return ListView(
+              controller: _scrollController,
               children: snapshot.data!.docs
                   .map((doc) => _buildMessageItem(doc))
                   .toList());
