@@ -76,15 +76,15 @@ class ChatScreen extends StatelessWidget {
         builder: (context, snapshot) {
           // Error state
           if (snapshot.hasError) {
-            return const Text('Error');
+            return const Center(child: Text('Error'));
           }
           // Waiting state
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
           // No messages
           if (snapshot.data!.docs.isEmpty) {
-            return const Text('No messages');
+            return const Center(child: Text('No messages'));
           }
           // return message list
           return ListView(
